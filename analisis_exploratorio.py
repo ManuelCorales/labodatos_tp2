@@ -19,5 +19,13 @@ carpeta = "./labodatos_tp2/"
 
 datos = pd.read_csv(carpeta + "sign_mnist_train.csv")
 
+#%% cant de clases (cada clase es una letra)
 
-#%% 
+## no c si se hace con train o con datos, creeria que con train
+
+consulta = sql^"""
+           SELECT DISTINCT COUNT(*) AS 'cant_clases'
+           FROM train
+          """
+print(consulta)
+
