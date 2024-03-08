@@ -26,18 +26,19 @@ señas_df= pd.read_csv(carpeta+"sign_mnist_train.csv")
 #hay 1162 datos para la letra i
 #hay 1196 datos para la letra o
 #hay 1161 datos para la letra u
-
 df_vocales= sql^"""
-     Select * 
-     FROM señas_df
-     WHERE label = 0 OR label =4 OR label = 8
-      OR label =14 OR label = 20
-     """
+         Select * 
+         FROM señas_df
+         WHERE label = 0 OR label =4 OR label = 8
+          OR label =14 OR label = 20
+         """
 print(df_vocales.head())     
-#%%
+
+
 #Separo los datos para el entrenamiento y el test 
 X= df_vocales.drop(columns = ['label'])
 Y= df_vocales['label']
+
 X_train, X_test, y_train, y_test =  train_test_split(X, Y, test_size=0.15 , shuffle=True, stratify=  Y)
 #%%
 #busco el mejor arbol
@@ -91,30 +92,12 @@ plt.title('Matriz de Confusión')
 plt.xlabel('Clases Predictivas')
 plt.ylabel('Clases Verdaderas')
 plt.show()
-     
-#exactitud
-exactitud= sklearn.metrics.accuracy_score(y_real,y_predicho)
-print(exactitud)
 
-#precision
-presiA= 165/(165+14)
-print(presiA)
-presiE= 126/(126+4)
-print(presiE)
-presiI= 146/(146+10+11+9+3)
-print(presiI)
-presiO= 168/(168+9)
-print(presiO)
-presiU= 157/(157+15+1+2+1)
-print(presiU)
-#exhaustividad
-recallA= 165/(165+4)
-print(recallA)
-recallE= 126/(126+1+9+6+2)
-print(recallE)
-recallI= 146/(146+12+1+15)
-print(recallI)
-recallO= 168/(168+1+10+1)
-print(recallO)
-recallU= 157/(157+3+11+3)
-print(recallU)
+exactitud = sklearn.metrics.accuracy_score(y_real, y_predicho)
+precision = sklearn.metrics.precision_score(y_real, y_predicho, average=None)
+recall = sklearn.metrics.recall_score(y_real, y_predicho, average=None)
+
+print('exactitud del modelo:', exactitud)
+print('Precisión por clase:', precision)
+print('Exhaustividad por clase:', recall)
+
