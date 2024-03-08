@@ -7,13 +7,14 @@ Created on Sat Mar  2 15:15:41 2024
 """
 
 
-from sklearn.tree import DecisionTreeClassifier,plot_tree, export_graphviz
-import graphviz
+from sklearn.tree import DecisionTreeClassifier,plot_tree
 import pandas as pd
-from inline_sql import sql, sql_val
+from inline_sql import sql
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split, RandomizedSearchCV,  KFold, cross_val_score, cross_val_score
+import seaborn as sns
+from sklearn.model_selection import train_test_split, RandomizedSearchCV,  KFold, cross_val_score
+import sklearn.metrics
 #%%
 carpeta= "/home/oem/Desktop/uni/labodatos/"
 señas_df= pd.read_csv(carpeta+"sign_mnist_train.csv")
@@ -45,9 +46,7 @@ hyper_params = {'criterion' : ["gini", "entropy"],
 
 arbol = DecisionTreeClassifier()
 clf = RandomizedSearchCV(arbol, hyper_params, random_state= 0, n_iter= 5)
-clf.fit(X_train, y_train)
-clf.best_params_
-clf.best_score_
+#el mejor arbol tienen los hyperparametros max depth = 6 y criterio = entropy
 #lo hago a mano por las dudas
 def busco_mejor_arbol (c:list, md:list):
     best_score= 0
@@ -61,11 +60,61 @@ def busco_mejor_arbol (c:list, md:list):
                 hyperparams:list = []
                 hyperparams.append(criterio)
                 hyperparams.append(depth)
-    return best_score, hyperparams  
-print(busco_mejor_arbol( ["gini", "entropy"], [2,3,4,5,6] ))  
-#%%
+    return best_score, hyperparams          
+
+print(busco_mejor_arbol( ["gini", "entropy"], [2,3,4,5,6] ))
+
+clf.fit(X_train, y_train)
+
+clf.best_params_
+
+clf.best_score_
+
 #el mejor arbol tienen los hyperparametros max depth = 6 y criterio = entropy
-#lo evaluo con los datos test
 clf.score(X_test, y_test)
+arbolFinal= DecisionTreeClassifier(max_depth= 6, criterion= 'entropy')
+arbolFinal.fit(X_train, y_train)
+arbolFinal.score(X_test, y_test)
+plot_tree(arbolFinal)
 
+#%%
+#matriz de confusion
+y_real= y_test
+y_predicho= clf.predict(X_test)
+mc= sklearn.metrics.confusion_matrix(y_real, y_predicho)
+clases= ["A","E","I","O","U"]
+plt.figure(figsize=(8, 6))
+sns.set(font_scale=1.2)  # Ajusta el tamaño de la fuente
+sns.heatmap(mc, annot=True, fmt='d', cmap='PuRd', 
+            xticklabels=clases, yticklabels=clases)  # Personaliza el cmap según tus preferencias
+plt.title('Matriz de Confusión')
+plt.xlabel('Clases Predictivas')
+plt.ylabel('Clases Verdaderas')
+plt.show()
+     
+#exactitud
+exactitud= sklearn.metrics.accuracy_score(y_real,y_predicho)
+print(exactitud)
 
+#precision
+presiA= 165/(165+14)
+print(presiA)
+presiE= 126/(126+4)
+print(presiE)
+presiI= 146/(146+10+11+9+3)
+print(presiI)
+presiO= 168/(168+9)
+print(presiO)
+presiU= 157/(157+15+1+2+1)
+print(presiU)
+#exhaustividad
+recallA= 165/(165+4)
+print(recallA)
+recallE= 126/(126+1+9+6+2)
+print(recallE)
+recallI= 146/(146+12+1+15)
+print(recallI)
+recallO= 168/(168+1+10+1)
+print(recallO)
+recallU= 157/(157+3+11+3)
+print(recallU)
