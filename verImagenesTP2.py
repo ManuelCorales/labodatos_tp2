@@ -34,5 +34,5 @@ train[3][1:].reshape(28, 28)
 # In[3]:
 
 
-plt.matshow(train[3][1:].reshape(28, 28), cmap = "gray")
+plt.matshow(train[0][1:].reshape(28, 28), cmap = "gray")
 
