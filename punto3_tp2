@@ -47,23 +47,6 @@ hyper_params = {'criterion' : ["gini", "entropy"],
 
 arbol = DecisionTreeClassifier()
 clf = RandomizedSearchCV(arbol, hyper_params, random_state= 0, n_iter= 5)
-#el mejor arbol tienen los hyperparametros max depth = 6 y criterio = entropy
-#lo hago a mano por las dudas
-def busco_mejor_arbol (c:list, md:list):
-    best_score= 0
-    for criterio in c:
-        for depth in md:
-            arbol = DecisionTreeClassifier(criterion = criterio, max_depth=depth)
-            scores = cross_val_score(arbol, X_train, y_train, cv=5)
-            prom_score= np.mean(scores)
-            if prom_score > best_score:
-                best_score= prom_score
-                hyperparams:list = []
-                hyperparams.append(criterio)
-                hyperparams.append(depth)
-    return best_score, hyperparams          
-
-print(busco_mejor_arbol( ["gini", "entropy"], [2,3,4,5,6] ))
 
 clf.fit(X_train, y_train)
 
@@ -72,27 +55,12 @@ clf.best_params_
 clf.best_score_
 
 #el mejor arbol tienen los hyperparametros max depth = 6 y criterio = entropy
-clf.score(X_test, y_test)
-arbolFinal= DecisionTreeClassifier(max_depth= 6, criterion= 'entropy')
-arbolFinal.fit(X_train, y_train)
-arbolFinal.score(X_test, y_test)
-plot_tree(arbolFinal)
+clf.score(X_test, y_test) #evaluamos el modelo
 
 #%%
-#matriz de confusion
+#evaluo el modelo utilizando diferentes metricas
 y_real= y_test
 y_predicho= clf.predict(X_test)
-mc= sklearn.metrics.confusion_matrix(y_real, y_predicho)
-clases= ["A","E","I","O","U"]
-plt.figure(figsize=(8, 6))
-sns.set(font_scale=1.2)  # Ajusta el tamaño de la fuente
-sns.heatmap(mc, annot=True, fmt='d', cmap='PuRd', 
-            xticklabels=clases, yticklabels=clases)  # Personaliza el cmap según tus preferencias
-plt.title('Matriz de Confusión')
-plt.xlabel('Clases Predictivas')
-plt.ylabel('Clases Verdaderas')
-plt.show()
-
 exactitud = sklearn.metrics.accuracy_score(y_real, y_predicho)
 precision = sklearn.metrics.precision_score(y_real, y_predicho, average=None)
 recall = sklearn.metrics.recall_score(y_real, y_predicho, average=None)
@@ -100,4 +68,22 @@ recall = sklearn.metrics.recall_score(y_real, y_predicho, average=None)
 print('exactitud del modelo:', exactitud)
 print('Precisión por clase:', precision)
 print('Exhaustividad por clase:', recall)
+
+#matriz de confusion
+mc= sklearn.metrics.confusion_matrix(y_real, y_predicho)
+clases= ["A","E","I","O","U"]
+
+plt.figure(figsize=(8, 6))
+sns.set(font_scale=1.2)  
+sns.heatmap(mc,
+            annot=True,
+            fmt='d', 
+            cmap='PuRd', 
+            xticklabels=clases, 
+            yticklabels=clases)  
+plt.title('Matriz de Confusión')
+plt.xlabel('Clases Predictivas')
+plt.ylabel('Clases Verdaderas')
+plt.show()
+
 
