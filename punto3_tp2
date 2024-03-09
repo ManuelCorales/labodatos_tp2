@@ -15,72 +15,85 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, RandomizedSearchCV,  KFold, cross_val_score
 import sklearn.metrics
-#%%
-carpeta= "/home/oem/Desktop/uni/labodatos/"
-señas_df= pd.read_csv(carpeta+"sign_mnist_train.csv")
 
 #%%
+def datos():
+    ### importamos datos
+    carpeta = "/home/oem/Desktop/uni/labodatos/"
+    datos = pd.read_csv(carpeta + "sign_mnist_train.csv")
+
+    ### creamos dataframe con subconjunto
+    ### van a ser requeridos los datos con label=0 (A), label =4 (E) 
+    ##  label = 8 (I), label =14 (O) y label = 20 (U)
+    vocales= sql^"""
+             Select * 
+             FROM datos
+             WHERE label = 0 OR label =4 OR label = 8
+              OR label =14 OR label = 20
+             """
+    return vocales
+
+vocales: pd.DataFrame = datos()
 #CREO UN DATASET SOLO DE VOCALES#
 #HAy 1126 datos para la letra a
 #hay 957 datos para la letra e
 #hay 1162 datos para la letra i
 #hay 1196 datos para la letra o
 #hay 1161 datos para la letra u
-df_vocales= sql^"""
-         Select * 
-         FROM señas_df
-         WHERE label = 0 OR label =4 OR label = 8
-          OR label =14 OR label = 20
-         """
-print(df_vocales.head())     
 
+#%%
+#################################################
+## Generacion archivos TEST / TRAIN
+#################################################
+# Dividimos los datos en Desarrollo y Evaluacion
+# Reservamos vocales_Evaluacion para testear el modelo al final, luego de elegir uno
 
-#Separo los datos para el entrenamiento y el test 
-X= df_vocales.drop(columns = ['label'])
-Y= df_vocales['label']
+X= vocales.drop(columns = ['label'])
+Y= vocales['label']
 
 X_train, X_test, y_train, y_test =  train_test_split(X, Y, test_size=0.15 , shuffle=True, stratify=  Y)
 #%%
 #busco el mejor arbol
-hyper_params = {'criterion' : ["gini", "entropy"],
+
+def analiza_modelos():
+      hyper_params = {'criterion' : ["gini", "entropy"],
                    'max_depth' : [2,3,4,5,6] }
-
-arbol = DecisionTreeClassifier()
-clf = RandomizedSearchCV(arbol, hyper_params, random_state= 0, n_iter= 5)
-
-clf.fit(X_train, y_train)
-
-clf.best_params_
-
-clf.best_score_
-
+      arbol = DecisionTreeClassifier()
+      clf = RandomizedSearchCV(arbol, hyper_params, random_state= 0, n_iter= 5)
+      clf.fit(X_train, y_train)
+      print(clf.best_params_)
+      print(clf.best_score_)
+      return clf
+arbol= analiza_modelos()
 #el mejor arbol tienen los hyperparametros max depth = 6 y criterio = entropy
-clf.score(X_test, y_test) #evaluamos el modelo
+arbol.score(X_test, y_test) #evaluamos el modelo
 
 #%%
 #evaluo el modelo utilizando diferentes metricas
-y_real= y_test
-y_predicho= clf.predict(X_test)
-exactitud = sklearn.metrics.accuracy_score(y_real, y_predicho)
-precision = sklearn.metrics.precision_score(y_real, y_predicho, average=None)
-recall = sklearn.metrics.recall_score(y_real, y_predicho, average=None)
+def evaluamos_modelo():
+    y_real= y_test
+    y_predicho= arbol.predict(X_test)
+    exactitud = sklearn.metrics.accuracy_score(y_real, y_predicho)
+    precision = sklearn.metrics.precision_score(y_real, y_predicho, average=None)
+    recall = sklearn.metrics.recall_score(y_real, y_predicho, average=None)
+    print('exactitud del modelo:', exactitud)
+    print('Precisión por clase:', precision)
+    print('Exhaustividad por clase:', recall)
+    #matriz de confusion
+    mc= sklearn.metrics.confusion_matrix(y_real, y_predicho)
+    return mc
 
-print('exactitud del modelo:', exactitud)
-print('Precisión por clase:', precision)
-print('Exhaustividad por clase:', recall)
-
-#matriz de confusion
-mc= sklearn.metrics.confusion_matrix(y_real, y_predicho)
-clases= ["A","E","I","O","U"]
-
+#################################################
+## Graficamos matiz de confusion
+#################################################
 plt.figure(figsize=(8, 6))
 sns.set(font_scale=1.2)  
-sns.heatmap(mc,
+sns.heatmap(evaluamos_modelo(),
             annot=True,
             fmt='d', 
             cmap='PuRd', 
-            xticklabels=clases, 
-            yticklabels=clases)  
+            xticklabels=["A","E","I","O","U"], 
+            yticklabels=["A","E","I","O","U"])  
 plt.title('Matriz de Confusión')
 plt.xlabel('Clases Predictivas')
 plt.ylabel('Clases Verdaderas')
