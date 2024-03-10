@@ -13,13 +13,14 @@ import pandas as pd
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 import numpy as np
-from utils_imagenes import obtenerDfGeneral, obtenerDfLetra, obtenerLetraSegunIndice, obtenerListaLetras
+from utils_imagenes import obtenerListaLetras, convertirArrayACuadrado
 
 
 #%% importamos datos
 
 def main():
     generarGraficoDeDiferencias()
+    calcularRangoDePixelesImagenesReferencia()
     # obtenerValorPixelDeMayorDiferencia()
 
 
@@ -61,22 +62,40 @@ def generarGraficoDeDiferencias():
     fig, axes = plt.subplots()
     x = list(obtenerListaLetras())
     axes.bar(x, medianas)
+    
+    plt.ylabel("Métrica", fontsize=13)
+    plt.xlabel("Letras", fontsize=13)
     plt.show()
 
 
 
 def restaDeImagenesReferencia(indiceImagen1, indiceImagen2):
     carpeta = '../data/DfImagenesReferencia/'
-    dfReferencia1 = np.loadtxt(carpeta+str(indiceImagen1)+'.csv')
-    dfReferencia2 = np.loadtxt(carpeta+str(indiceImagen2)+'.csv')
+    referencia1 = np.loadtxt(carpeta+str(indiceImagen1)+'.csv')
+    referencia2 = np.loadtxt(carpeta+str(indiceImagen2)+'.csv')
 
-    pixelesReferencia1 = dfReferencia1.transpose()[1:]
-    pixelesReferencia2 = dfReferencia2.transpose()[1:]
+    pixelesReferencia1 = referencia1.transpose()[1:]
+    pixelesReferencia2 = referencia2.transpose()[1:]
 
     resultado = np.subtract(pixelesReferencia1, pixelesReferencia2)
     resultado = np.absolute(resultado)
 
     return np.median(resultado)
+
+
+def calcularRangoDePixelesImagenesReferencia():
+    pixelesMax = [0] * 784
+    pixelesMin = [255] * 784
+    carpeta = '../data/DfImagenesReferencia/'
+    for i in range(24):
+        referencia = np.loadtxt(carpeta+str(i)+'.csv')
+        referencia = referencia.transpose()[1:]
+        pixelesMax = np.fmax(referencia, pixelesMax)
+        pixelesMin = np.fmin(referencia, pixelesMin)
+    
+    resultado = convertirArrayACuadrado(pixelesMax - pixelesMin)
+    plt.matshow(resultado, cmap = "gray")
+    plt.show()
 
 
 if(__name__ == "__main__"):
