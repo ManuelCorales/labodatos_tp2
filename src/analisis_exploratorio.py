@@ -96,7 +96,11 @@ def calcularRangoDePixelesImagenesReferencia():
     resultado = convertirArrayACuadrado(pixelesMax - pixelesMin)
     plt.matshow(resultado, cmap = "gray")
     plt.show()
-
+    
+    # Guardar el resultado en un archivo CSV
+    carpeta = "../"
+    df_resultado = pd.DataFrame(resultado)
+    df_resultado.to_csv(carpeta + 'figura3.csv', index=False)
 
 if(__name__ == "__main__"):
     main()
