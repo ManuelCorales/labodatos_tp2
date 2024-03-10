@@ -170,15 +170,15 @@ def visualizacion():
             puntuaciones_prueba.append(tupla[1])
             
         # Crear el gráfico
-        plt.plot(valores_k, puntuaciones_entrenamiento, marker='o', linestyle='-', color = 'purple', label = 'entrenamiento')
-        plt.plot(valores_k, puntuaciones_prueba, marker='o', linestyle='-', color = 'mediumpurple', label = 'test')
+        plt.plot(valores_k, puntuaciones_entrenamiento, marker='o', linestyle='-', color = 'firebrick', label = 'entrenamiento')
+        plt.plot(valores_k, puntuaciones_prueba, marker='o', linestyle='-', color = 'orangered', label = 'test')
         
         # Etiquetas y título del gráfico
         plt.xlabel('Valores de vecinos (k)')
         plt.ylabel('Score')
         plt.title(f'Valores de k vs Scores - {contador}')
         plt.legend()
-        plt.ylim(0.60,1.00)
+        plt.ylim(0.70,1.00)
         # Mostrar el gráfico
         plt.show()
    
@@ -199,6 +199,7 @@ def visualizacion():
     plt.imshow(mascara, cmap='PuRd',alpha=0.4)  # Resaltar los píxeles en color PuRd con una transparencia del 40%
     plt.title('Imagen de fondo con píxeles resaltados')
     plt.show()
+    
 
 #%%
 def main():
