@@ -4,15 +4,19 @@ from src.analisis_exploratorio import generarGraficosDeAnalisis
 from src.clasificacion_binaria import clasificacionBinaria
 
 def main():
+    #%%
     # Generamos imágenes de referencia
     generarImagenesReferencia()
 
+    #%%
     # Mostramos análisis exploratorios
     generarGraficosDeAnalisis()
 
+    #%%
     # Hacemos la evaluacion binaria
     clasificacionBinaria()
 
+    #%%
     # Hacemos la evaluación multiclase 
     evaluacionMulticlase()
 

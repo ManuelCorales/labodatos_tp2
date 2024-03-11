@@ -3,6 +3,7 @@ from pandas import DataFrame
 import pandas as pd
 import numpy as np
 
+#%%
 carpeta = "./data/"
 df = pd.read_csv(carpeta + "info_limpia.csv")
 
@@ -18,8 +19,6 @@ mappingLetras = {
 
 def obtenerDfGeneral():
     return df
-
-#%% importamos datos
 
 # Dado un df obtenemos la matriz de imagen de referencia definida en el informe del trabajo
 def obtenerDfImagenReferencia(dfImagen: DataFrame, guardar=False, indiceLetra=-1):

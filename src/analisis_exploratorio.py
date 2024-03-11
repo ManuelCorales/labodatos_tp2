@@ -21,11 +21,13 @@ from src.utils_imagenes import obtenerListaLetras, convertirArrayACuadrado
 def main():
     generarGraficosDeAnalisis()
 
+#%%
 def generarGraficosDeAnalisis():
     print('######## GRÁFICOS DE ANÁLISIS DE DATOS ########')
     generarGraficoDeDiferencias()
     calcularRangoDePixelesImagenesReferencia()
 
+#%%
 def generarGraficoDeDiferencias():
     indiceLetraComparacion = 4 # Letra E
     
@@ -42,7 +44,7 @@ def generarGraficoDeDiferencias():
     plt.show()
 
 
-
+#%%
 def restaDeImagenesReferencia(indiceImagen1, indiceImagen2):
     carpeta = './data/DfImagenesReferencia/'
     referencia1 = np.loadtxt(carpeta+str(indiceImagen1)+'.csv')
@@ -56,7 +58,7 @@ def restaDeImagenesReferencia(indiceImagen1, indiceImagen2):
 
     return np.median(resultado)
 
-
+#%%
 def calcularRangoDePixelesImagenesReferencia():
     pixelesMax = [0] * 784
     pixelesMin = [255] * 784
@@ -76,5 +78,6 @@ def calcularRangoDePixelesImagenesReferencia():
     df_resultado = pd.DataFrame(resultado)
     df_resultado.to_csv(carpeta + 'rango_pixeles.csv', index=False)
 
+#%%
 if(__name__ == "__main__"):
     main()
