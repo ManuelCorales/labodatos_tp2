@@ -19,24 +19,39 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from inline_sql import sql, sql_val
 from pandas import DataFrame
+from src.utils_imagenes import obtenerDfGeneral 
+
+#%%
+def main():
+    clasificacionBinaria()
+
+def clasificacionBinaria():
+    print('######## CLASIFICACION BINARIA ########')
+    datos()
+    analisis_muestras()
+    resultados = entrenar_y_evaluar_modelos()
+    analisis_experimento(resultados)
+    visualizacion(resultados)
 
 
 #%%  Construir nuevo dataframe a partir del original que imagenes de letras L y A solamente
-
 LoA = None
 
+###  cambiar pixeles rango 
+# Rango de valores por los que se va a mover k (hiperparámetro de vecinos de modelo knn)
+valores_k = range(1, 9)
+        
 def datos():
     global LoA
     ### importamos datos
-    carpeta = "./labodatos_tp2/"
-    datos = pd.read_csv("sign_mnist_train.csv")
+    datos = obtenerDfGeneral()
 
     ### creamos dataframe con subconjunto
-    ### van a ser requeridos los datos con label=0 (A), y label=11(L)
+    ### van a ser requeridos los datos con label=0 (A), y label=10(L)
     consulta = sql^"""
                     SELECT * 
                     FROM datos
-                    WHERE label= 0 OR label= 11 
+                    WHERE label= 0 OR label= 10 
                    """
     LoA = DataFrame(consulta)
     
@@ -52,28 +67,21 @@ def analisis_muestras():
     print(consulta2)
     
     ### obtenemos que de la A hay 1.126, y 1.241 de la L...No tan desbalanceado
-    ###pero tampoco cantidades iguales
+    ### pero tampoco cantidades iguales
    
     
+
 #%%
 #################################################
 ## Generacion archivos TEST / TRAIN
 #################################################
+def entrenar_y_evaluar_modelos():
+        resultados = {}
+        # vamos a dividir el dataset en distintas cantidades de atributos
 
-#%%
+        cant_atributos = [2, 4, 100, 102, 265, 267, 303, 305, 465, 467, 550, 552,
+                625, 627, 698, 700]
 
-# vamos a dividir el dataset en distintas cantidades de atributos
-
-cant_atributos = [2, 4, 100, 102, 265, 267, 303, 305, 465, 467, 550, 552,
-                  625, 627, 698, 700]
-###  cambiar pixeles rango 
-# Rango de valores por los que se va a mover k
-valores_k = range(1, 9)
-        
-resultados = {}
-
-def experimento():
-        
         # Realizamos los modelos con distintas cantidades de atributos
         for i in range(1, len(cant_atributos), 2):
             atributo =cant_atributos[i]
@@ -82,12 +90,12 @@ def experimento():
             X = LoA.iloc[:,cant_atributos[i-1]:atributo] # variables predictoras. agrego uno porque no es 3 inclusivo por ejemplo
             Y = LoA.iloc[:,0]
                     
-##          Dividimos en test(30%) y train(70%)
+            ## Dividimos en test(30%) y train(70%)
             X_train, X_test, Y_train, Y_test = train_test_split(X,Y, test_size = 0.3, shuffle= True, random_state= 314) 
 
-##   stratify         
+            ## stratify         
 
-##          Generamos el modelo y lo evaluamos
+            ## Generamos el modelo y lo evaluamos
             for k in valores_k:
                 # Declaramos el tipo de modelo
                 neigh = KNeighborsClassifier(n_neighbors = k)
@@ -101,15 +109,16 @@ def experimento():
                 
                 
                 resultados[atributo][k] = (resultados_train, resultados_test)
+
+        return resultados
      
               
-def analisis_experimento():
-    
+def analisis_experimento(resultadosEvaluacion):
     medias_entrenamiento = []
     medias_prueba = []
     
     # Iteramos sobre los elementos del diccionario resultados
-    for diccionario in resultados.values():
+    for diccionario in resultadosEvaluacion.values():
         puntuaciones_entrenamiento = []
         puntuaciones_prueba = []
         # Iteramos sobre las tuplas dentro de cada subdiccionario
@@ -128,7 +137,7 @@ def analisis_experimento():
     # Iteramos sobre los elementos del diccionario resultados
     maximos_entrenamiento = []
     maximos_prueba = []
-    for diccionario in resultados.values():
+    for diccionario in resultadosEvaluacion.values():
         max_entrenamiento = []
         max_prueba = []
         # Iteramos sobre las tuplas dentro de cada subdiccionario
@@ -154,11 +163,11 @@ def analisis_experimento():
 ## ademas, con k = 6 se ve en el grafico que alcanza su max score
 
 
-def visualizacion():
+def visualizacion(resultadosEvaluacion):
 #%% graficos de score vs k
     contador = 1
     # Iteramos sobre los elementos del diccionario resultados
-    for diccionario in resultados.values():
+    for diccionario in resultadosEvaluacion.values():
             
         puntuaciones_entrenamiento = []
         puntuaciones_prueba = []
@@ -178,7 +187,7 @@ def visualizacion():
         plt.ylabel('Score')
         plt.title(f'Valores de k vs Scores - {contador}')
         plt.legend()
-        plt.ylim(0.70,1.00)
+        plt.ylim(0.50, 1.00)
         # Mostrar el gráfico
         plt.show()
    
@@ -189,7 +198,7 @@ def visualizacion():
                       625, 626, 698, 699]
     
     # Cargar la imagen de fondo desde el archivo CSV
-    imagen_fondo = pd.read_csv("figura3.csv").values
+    imagen_fondo = pd.read_csv("./data/rango_pixeles.csv").values
     
     # Crear una máscara con los píxeles a resaltar
     mascara = np.isin(np.arange(imagen_fondo.size), pixeles).reshape(imagen_fondo.shape)
@@ -201,12 +210,7 @@ def visualizacion():
     plt.show()
     
 
-#%%
-def main():
-    datos()
-    analisis_muestras()
-    experimento()
-    analisis_experimento()
-    visualizacion()
 
-main()
+
+if(__name__ == "__main__"):
+    main()

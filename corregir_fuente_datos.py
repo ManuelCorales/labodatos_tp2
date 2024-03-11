@@ -10,9 +10,6 @@ Autores     : Corales, Biasoni y Soler
 
 #%% importamos librerias
 import pandas as pd
-from pandas import DataFrame
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 #%% importamos datos
@@ -20,9 +17,9 @@ import numpy as np
 def main():
     corregirFuenteDatos()
 
-
+# Corregimos los datos restando en 1 el índice de los labels mayores a 9
 def corregirFuenteDatos():
-    carpeta = '../'
+    carpeta = './data/'
     df = pd.read_csv(carpeta + "sign_mnist_train.csv")
     df[df['label'] > 9] = df[df['label'] > 9] - 1
     df.to_csv(carpeta+'info_limpia.csv', index=False)

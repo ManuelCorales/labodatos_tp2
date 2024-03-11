@@ -3,7 +3,7 @@ from pandas import DataFrame
 import pandas as pd
 import numpy as np
 
-carpeta = "../"
+carpeta = "./data/"
 df = pd.read_csv(carpeta + "info_limpia.csv")
 
 mappingLetras = {
@@ -31,7 +31,7 @@ def obtenerDfImagenReferencia(dfImagen: DataFrame, guardar=False, indiceLetra=-1
     resultado = DataFrame(resultado)
 
     if(guardar and indiceLetra != -1):
-        resultado.to_csv('../data/DfImagenesReferencia/'+str(indiceLetra)+'.csv', index=False)
+        resultado.to_csv('./data/DfImagenesReferencia/'+str(indiceLetra)+'.csv', index=False)
 
     return resultado
 
