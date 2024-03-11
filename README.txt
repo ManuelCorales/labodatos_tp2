@@ -9,7 +9,7 @@ Sobre las bibliotecas:
 Consideraciones para poder ejecutar el codigo:
     Primeramente, ejecutar el archivo "corregir_fuente_datos.py". Generara los datos que se tomaran para ser utilizados en todo el resto del programa. Para correr este archivo, previamente se ha de copiar la fuente de datos original "sign_mnist_train.csv" en la carpeta "data"
 
-    En la carpeta principal se encuentra el codigo correspondiente al tp, en el archivo principal llamado "sign_grupo2.py". El cual se complementa con otros archivos .py
+    En la carpeta principal se encuentra el codigo correspondiente al tp, en el archivo principal llamado "sign_grupo2.py". El cual se complementa con otros archivos .py. Ademas, son entregadas las "secciones" de manera individual, en caso de que se quiera correr eso solo.
 
     Al correr este archivo con el comando de python se muestran todos los graficos utilizados para redactar el informe e informacion extra acerca de ellos.
 
