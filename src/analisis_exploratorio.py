@@ -13,44 +13,18 @@ import pandas as pd
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 import numpy as np
-from utils_imagenes import obtenerListaLetras, convertirArrayACuadrado
+from src.utils_imagenes import obtenerListaLetras, convertirArrayACuadrado
 
 
 #%% importamos datos
 
 def main():
+    generarGraficosDeAnalisis()
+
+def generarGraficosDeAnalisis():
+    print('######## GRÁFICOS DE ANÁLISIS DE DATOS ########')
     generarGraficoDeDiferencias()
     calcularRangoDePixelesImagenesReferencia()
-    # obtenerValorPixelDeMayorDiferencia()
-
-
-
-# def obtenerValorPixelDeMayorDiferencia():
-#     carpeta = '../data/DfImagenesReferencia/'
-#     mediasPorLetra = []
-#     # for i in range(25):
-#     diferenciasMaximasPorLetra = []
-#     maximo = 0
-#     maximosPorClase = []
-#     minimosPorClase = []
-#     dfReferencia = np.loadtxt(carpeta+str(1)+'.csv')
-#     pixelesReferencia = dfReferencia.transpose()[1:]
-#     dfLetra = obtenerDfLetra(3)
-
-#     print(len(pixelesReferencia))
-#     for j in range(1, 785):
-#         max = dfLetra['pixel'+str(j)].max()
-#         min = dfLetra['pixel'+str(j)].min()
-#         difConMinimo = abs(min - pixelesReferencia[j - 1])
-#         difConMaximo = abs(max - pixelesReferencia[j - 1])
-#         maxDif = np.max([difConMaximo, difConMinimo])
-#         print(maxDif)
-#         diferenciasMaximasPorLetra.append(maxDif)
-
-#     mediaDeDiferencias = np.median(diferenciasMaximasPorLetra)
-#     mediasPorLetra.append(mediaDeDiferencias)
-
-#     print(48, mediasPorLetra)
 
 def generarGraficoDeDiferencias():
     indiceLetraComparacion = 4 # Letra E
@@ -70,7 +44,7 @@ def generarGraficoDeDiferencias():
 
 
 def restaDeImagenesReferencia(indiceImagen1, indiceImagen2):
-    carpeta = '../data/DfImagenesReferencia/'
+    carpeta = './data/DfImagenesReferencia/'
     referencia1 = np.loadtxt(carpeta+str(indiceImagen1)+'.csv')
     referencia2 = np.loadtxt(carpeta+str(indiceImagen2)+'.csv')
 
@@ -86,7 +60,7 @@ def restaDeImagenesReferencia(indiceImagen1, indiceImagen2):
 def calcularRangoDePixelesImagenesReferencia():
     pixelesMax = [0] * 784
     pixelesMin = [255] * 784
-    carpeta = '../data/DfImagenesReferencia/'
+    carpeta = './data/DfImagenesReferencia/'
     for i in range(24):
         referencia = np.loadtxt(carpeta+str(i)+'.csv')
         referencia = referencia.transpose()[1:]
@@ -98,9 +72,9 @@ def calcularRangoDePixelesImagenesReferencia():
     plt.show()
     
     # Guardar el resultado en un archivo CSV
-    carpeta = "../"
+    carpeta = "./data/"
     df_resultado = pd.DataFrame(resultado)
-    df_resultado.to_csv(carpeta + 'figura3.csv', index=False)
+    df_resultado.to_csv(carpeta + 'rango_pixeles.csv', index=False)
 
 if(__name__ == "__main__"):
     main()
